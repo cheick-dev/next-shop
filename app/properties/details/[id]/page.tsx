@@ -23,14 +23,18 @@ function DetailsPage({ params }: { params: { id: string } }) {
 		!Array.isArray(product.product_images) ||
 		product.product_images.length === 0
 	) {
-		return <Loader />;
+		return (
+			<div className="flex justify-center h-screen">
+				<Loader />;
+			</div>
+		);
 	}
 
 	return (
-		<section className="text-gray-600 body-font overflow-hidden">
+		<section className="text-gray-600 body-font">
 			<div className="container px-5 py-24 mx-auto">
 				<div className="lg:w-4/5 mx-auto flex flex-wrap">
-					<div className="lg:w-1/2 w-full lg:h-auto h-64 relative">
+					<div className="lg:w-1/2 w-full lg:h-auto min-h-64 relative">
 						{currentImage > 0 && (
 							<button
 								className="text-2xl font-bold absolute top-1/2 transform -translate-y-1/2 z-10 bg-black text-white opacity-50 px-4 py-2 rounded-full flex items-center justify-center"
@@ -42,15 +46,16 @@ function DetailsPage({ params }: { params: { id: string } }) {
 						{product.product_images.map(
 							(img: string, index: number) => (
 								<img
+									width={"100%"}
+									height={"100%"}
 									key={index}
 									src={JSON.parse(img).url}
 									alt={`Slide ${index + 1}`}
-									className={`absolute w-full object-cover object-center rounded transition-opacity duration-500 ${
+									className={`absolute w-full object-cover rounded transition-opacity duration-500 ${
 										index === currentImage
 											? "opacity-100"
 											: "opacity-0"
 									}`}
-									// onClick={() => changeImage(index)}
 								/>
 							)
 						)}

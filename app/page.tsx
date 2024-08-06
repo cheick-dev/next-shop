@@ -7,7 +7,7 @@ import Listing from "@/components/Listing";
 
 export default function Home() {
 	return (
-		<main className="container flex min-h-screen flex-col items-center justify-center ">
+		<main className="">
 			<Listing />
 		</main>
 	);

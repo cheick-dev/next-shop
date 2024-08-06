@@ -10,6 +10,7 @@ import { createProduct } from "@/services/productsService";
 import { useRouter } from "next/navigation";
 import Loader from "../Loader";
 import Alert from "../Alert";
+import Select from "./Select";
 
 const schema = z.object({
 	name: z.string().min(1, "Le nom du produit est requis"),
@@ -43,6 +44,10 @@ function Form() {
 	const { user } = useUser();
 	const formRef = useRef<HTMLFormElement>(null);
 	const router = useRouter();
+
+	const [showAlert, setShowAlert] = useState(false);
+	const [alertType, setAlertType] = useState("");
+	const [alertMessage, setAlertMessage] = useState("");
 
 	const [productData, setProductData] = useState({
 		product_name: "",
@@ -80,9 +85,7 @@ function Form() {
 				images: productData.product_images,
 			});
 			const uploadedImages = await uploadFiles(images);
-			console.log(images);
 			productData.product_images = uploadedImages;
-			// productData.product_images = imgIds;
 
 			const res = await createProduct({
 				...productData,
@@ -90,13 +93,19 @@ function Form() {
 				product_quantity: parseInt(productData.product_quantity),
 				clerckUserId: user?.id,
 			});
+			setAlertType("success");
+			setAlertMessage("Le formulaire a été soumis avec succès !");
+			setShowAlert(true);
 			setIsLoading(false);
 			if (res.$id) {
 				formRef.current?.reset();
-				<Alert type="success" message="Produit ajouté avec succès" />;
-				router.push("/");
 			} else {
 				const Ids = uploadedImages.map((image) => JSON.parse(image).id);
+				setAlertType("error");
+				setAlertMessage(
+					"Une erreur est survenue lors de la validation des images."
+				);
+				setShowAlert(true);
 				await deleteFile(Ids);
 			}
 			setErrors({});
@@ -108,23 +117,21 @@ function Form() {
 				});
 				setIsLoading(false);
 				setErrors(newErrors);
-				return (
-					<Alert
-						type="danger"
-						message="Une erreur est survenue lors de la validation."
-					/>
-				);
+				// Alert
+				setAlertType("error");
+				setAlertMessage(e.message);
+				setShowAlert(true);
 			} else {
 				setIsLoading(false);
 				setErrors({
 					form: "Une erreur est survenue lors de la validation.",
 				});
-				return (
-					<Alert
-						type="danger"
-						message="Une erreur est survenue lors de la validation."
-					/>
+				// Alert
+				setAlertType("error");
+				setAlertMessage(
+					"Une erreur est survenue lors de la validation des données."
 				);
+				setShowAlert(true);
 			}
 		}
 	};
@@ -134,6 +141,12 @@ function Form() {
 			<h1 className="text-3xl font-bold text-center mt-4 mb-6">
 				Ajouter un produit
 			</h1>
+			<Alert
+				type={alertType}
+				message={alertMessage}
+				show={showAlert}
+				setShow={setShowAlert}
+			/>
 
 			<form
 				className="border border-gray-300 rounded-lg p-4 mt-4 max-w-md mx-auto"
@@ -157,22 +170,23 @@ function Form() {
 						onChange={handleChange}
 						error={errors?.price}
 					/>
-					<CustomInput
-						type="text"
-						name="product_description"
-						label="Description"
-						value={productData.product_description}
-						onChange={handleChange}
-						error={errors?.description}
-					/>
-					<CustomInput
+
+					{/* <CustomInput
 						type="text"
 						name="product_category"
 						label="Categorie"
 						value={productData.product_category}
 						onChange={handleChange}
 						error={errors?.category}
+					/> */}
+					<Select
+						name="product_category"
+						label="Categorie"
+						value={productData.product_category}
+						onChange={handleChange}
+						error={errors?.category}
 					/>
+
 					<CustomInput
 						type="text"
 						name="product_quantity"
@@ -180,6 +194,14 @@ function Form() {
 						value={productData.product_quantity}
 						onChange={handleChange}
 						error={errors?.quantity}
+					/>
+					<CustomInput
+						type="textarea"
+						name="product_description"
+						label="Description"
+						value={productData.product_description}
+						onChange={handleChange}
+						error={errors?.description}
 					/>
 				</>
 				<>

@@ -6,13 +6,16 @@ import React from "react";
 
 function App() {
 	return (
-		<div className="flex">
+		// <div classNameName="flex">
+		// 	<div classNameName="flex-1 flex flex-col">
+		// 	</div>
+		// </div>
+
+		<body className="bg-gray-100 dark:bg-gray-900">
+			<Header />
+			<MainContent />
 			<Sidebar />
-			<div className="flex-1 flex flex-col">
-				<Header />
-				<MainContent />
-			</div>
-		</div>
+		</body>
 	);
 }
 
